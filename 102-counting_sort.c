@@ -1,22 +1,22 @@
 #include "sort.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 /**
  * get_max - Gets the maximum value in an array
- * @array: Array to find max value from
+ * @array: Array to search
  * @size: Size of the array
  * Return: Maximum value
  */
 int get_max(int *array, size_t size)
 {
-    int max = array[0];
-    size_t i;
+	size_t i;
+	int max = array[0];
 
-    for (i = 1; i < size; i++)
-    {
-        if (array[i] > max)
-            max = array[i];
-    }
-    return (max);
+	for (i = 1; i < size; i++)
+		if (array[i] > max)
+			max = array[i];
+	return (max);
 }
 
 /**
@@ -26,48 +26,51 @@ int get_max(int *array, size_t size)
  */
 void counting_sort(int *array, size_t size)
 {
-    int *counting_array, *output, max, i;
+	int *counting_array, *output;
+	int max, i;
+	size_t j;
 
-    if (!array || size < 2)
-        return;
+	if (!array || size < 2)
+		return;
 
-    max = get_max(array, size);
-    counting_array = malloc(sizeof(int) * (max + 1));
-    if (!counting_array)
-        return;
+	max = get_max(array, size);
+	counting_array = malloc(sizeof(int) * (max + 1));
+	if (!counting_array)
+		return;
 
-    output = malloc(sizeof(int) * size);
-    if (!output)
-    {
-        free(counting_array);
-        return;
-    }
+	output = malloc(sizeof(int) * size);
+	if (!output)
+	{
+		free(counting_array);
+		return;
+	}
 
-    /* Initialize counting array */
-    for (i = 0; i <= max; i++)
-        counting_array[i] = 0;
+	/* Initialize counting array */
+	for (i = 0; i <= max; i++)
+		counting_array[i] = 0;
 
-    /* Count occurrences */
-    for (i = 0; i < (int)size; i++)
-        counting_array[array[i]]++;
+	/* Count occurrences */
+	for (j = 0; j < size; j++)
+		counting_array[array[j]]++;
 
-    /* Calculate cumulative count */
-    for (i = 1; i <= max; i++)
-        counting_array[i] += counting_array[i - 1];
+	/* Calculate cumulative count */
+	for (i = 1; i <= max; i++)
+		counting_array[i] += counting_array[i - 1];
 
-    print_array(counting_array, max + 1);
+	/* Print counting array */
+	print_array(counting_array, max + 1);
 
-    /* Build output array */
-    for (i = size - 1; i >= 0; i--)
-    {
-        output[counting_array[array[i]] - 1] = array[i];
-        counting_array[array[i]]--;
-    }
+	/* Build output array */
+	for (i = size - 1; i >= 0; i--)
+	{
+		output[counting_array[array[i]] - 1] = array[i];
+		counting_array[array[i]]--;
+	}
 
-    /* Copy output array to original array */
-    for (i = 0; i < (int)size; i++)
-        array[i] = output[i];
+	/* Copy output array to original array */
+	for (j = 0; j < size; j++)
+		array[j] = output[j];
 
-    free(counting_array);
-    free(output);
+	free(counting_array);
+	free(output);
 }

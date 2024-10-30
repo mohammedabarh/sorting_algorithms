@@ -9,19 +9,16 @@
  */
 int get_max(int *array, size_t size)
 {
-        size_t i;
-        int max;
+	size_t i;
+	int max;
 
-        if (!array || size == 0)
-                return (0);
-
-        max = array[0];
-        for (i = 1; i < size; i++)
-        {
-                if (array[i] > max)
-                        max = array[i];
-        }
-        return (max);
+	max = array[0];
+	for (i = 1; i < size; i++)
+	{
+		if (array[i] > max)
+			max = array[i];
+	}
+	return (max);
 }
 
 /**
@@ -32,45 +29,45 @@ int get_max(int *array, size_t size)
  */
 void counting_sort(int *array, size_t size)
 {
-        int *count, *output;
-        int max, i;
-        size_t j;
+	int *count, *output;
+	int max, i;
+	size_t j;
 
-        if (!array || size < 2)
-                return;
+	if (!array || size < 2)
+		return;
 
-        max = get_max(array, size);
-        count = malloc(sizeof(int) * (max + 1));
-        if (!count)
-                return;
+	max = get_max(array, size);
+	count = malloc(sizeof(int) * (max + 1));
+	if (!count)
+		return;
 
-        output = malloc(sizeof(int) * size);
-        if (!output)
-        {
-                free(count);
-                return;
-        }
+	output = malloc(sizeof(int) * size);
+	if (!output)
+	{
+		free(count);
+		return;
+	}
 
-        for (i = 0; i <= max; i++)
-                count[i] = 0;
+	for (i = 0; i <= max; i++)
+		count[i] = 0;
 
-        for (j = 0; j < size; j++)
-                count[array[j]]++;
+	for (j = 0; j < size; j++)
+		count[array[j]]++;
 
-        for (i = 1; i <= max; i++)
-                count[i] += count[i - 1];
+	for (i = 1; i <= max; i++)
+		count[i] += count[i - 1];
 
-        print_array(count, max + 1);
+	print_array(count, max + 1);
 
-        for (i = size - 1; i >= 0; i--)
-        {
-                output[count[array[i]] - 1] = array[i];
-                count[array[i]]--;
-        }
+	for (i = size - 1; i >= 0; i--)
+	{
+		output[count[array[i]] - 1] = array[i];
+		count[array[i]]--;
+	}
 
-        for (j = 0; j < size; j++)
-                array[j] = output[j];
+	for (j = 0; j < size; j++)
+		array[j] = output[j];
 
-        free(count);
-        free(output);
+	free(count);
+	free(output);
 }

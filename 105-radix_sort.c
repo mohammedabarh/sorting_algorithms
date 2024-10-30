@@ -8,8 +8,8 @@
  */
 int get_max(int *array, size_t size)
 {
-    size_t i;
     int max = array[0];
+    size_t i;
 
     for (i = 1; i < size; i++)
         if (array[i] > max)
@@ -18,52 +18,41 @@ int get_max(int *array, size_t size)
 }
 
 /**
- * counting_sort_radix - Performs counting sort on a specific digit
+ * counting_sort_radix - Performs counting sort based on significant digit
  * @array: Array to sort
  * @size: Size of the array
- * @exp: Current digit position
+ * @exp: Current significant digit (position)
  */
 void counting_sort_radix(int *array, size_t size, int exp)
 {
-    int *output, *count;
+    int *output;
+    int counting[10] = {0};
     size_t i;
 
     output = malloc(sizeof(int) * size);
-    if (!output)
+    if (output == NULL)
         return;
 
-    count = malloc(sizeof(int) * 10);
-    if (!count)
-    {
-        free(output);
-        return;
-    }
-
-    /* Initialize count array */
-    for (i = 0; i < 10; i++)
-        count[i] = 0;
-
-    /* Store count of occurrences */
+    /* Store count of occurrences in counting[] */
     for (i = 0; i < size; i++)
-        count[(array[i] / exp) % 10]++;
+        counting[(array[i] / exp) % 10]++;
 
-    /* Change count[i] to contain actual position */
+    /* Change counting[i] to contain actual position */
     for (i = 1; i < 10; i++)
-        count[i] += count[i - 1];
+        counting[i] += counting[i - 1];
 
-    /* Build output array */
+    /* Build the output array */
     for (i = size - 1; i < size; i--)
     {
-        output[count[(array[i] / exp) % 10] - 1] = array[i];
-        count[(array[i] / exp) % 10]--;
+        output[counting[(array[i] / exp) % 10] - 1] = array[i];
+        counting[(array[i] / exp) % 10]--;
     }
 
-    /* Copy output array to array */
+    /* Copy output array to array[] */
     for (i = 0; i < size; i++)
         array[i] = output[i];
 
     free(output);
-    free(count);
 }
 
 /**
@@ -75,7 +64,7 @@ void radix_sort(int *array, size_t size)
 {
     int max, exp;
 
-    if (!array || size < 2)
+    if (array == NULL || size < 2)
         return;
 
     max = get_max(array, size);

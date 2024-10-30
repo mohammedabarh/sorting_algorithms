@@ -1,41 +1,35 @@
 #include "sort.h"
 
 /**
- * swap - Swaps two integers
- * @a: First integer
- * @b: Second integer
- */
-void swap(int *a, int *b)
-{
-    int temp = *a;
-    *a = *b;
-    *b = temp;
-}
-
-/**
- * heapify - Maintains max heap property
- * @array: Array to heapify
+ * sift_down - Repairs the heap whose root element is at index 'start'
+ * @array: Array to sort
+ * @start: Starting index
+ * @end: Ending index
  * @size: Size of the array
- * @i: Root index
- * @total_size: Original size of the array
  */
-void heapify(int *array, size_t size, size_t i, size_t total_size)
+void sift_down(int *array, size_t start, size_t end, size_t size)
 {
-    size_t largest = i;
-    size_t left = 2 * i + 1;
-    size_t right = 2 * i + 2;
+    size_t root = start;
+    size_t child, swap;
+    int temp;
 
-    if (left < size && array[left] > array[largest])
-        largest = left;
-
-    if (right < size && array[right] > array[largest])
-        largest = right;
-
-    if (largest != i)
+    while ((root * 2 + 1) <= end)
     {
-        swap(&array[i], &array[largest]);
-        print_array(array, total_size);
-        heapify(array, size, largest, total_size);
+        child = root * 2 + 1;
+        swap = root;
+
+        if (array[swap] < array[child])
+            swap = child;
+        if (child + 1 <= end && array[swap] < array[child + 1])
+            swap = child + 1;
+        if (swap == root)
+            return;
+
+        temp = array[root];
+        array[root] = array[swap];
+        array[swap] = temp;
+        print_array(array, size);
+        root = swap;
     }
 }
 
@@ -46,20 +40,23 @@ void heapify(int *array, size_t size, size_t i, size_t total_size)
  */
 void heap_sort(int *array, size_t size)
 {
-    int i;
+    int temp;
+    size_t i;
 
-    if (!array || size < 2)
+    if (array == NULL || size < 2)
         return;
 
     /* Build max heap */
-    for (i = size / 2 - 1; i >= 0; i--)
-        heapify(array, size, i, size);
+    for (i = size / 2; i > 0; i--)
+        sift_down(array, i - 1, size - 1, size);
 
     /* Extract elements from heap */
     for (i = size - 1; i > 0; i--)
     {
-        swap(&array[0], &array[i]);
+        temp = array[0];
+        array[0] = array[i];
+        array[i] = temp;
         print_array(array, size);
-        heapify(array, i, 0, size);
+        sift_down(array, 0, i - 1, size);
     }
 }

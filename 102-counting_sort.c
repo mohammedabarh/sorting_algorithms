@@ -1,4 +1,3 @@
-// 102-counting_sort.c
 #include "sort.h"
 
 /**
@@ -8,54 +7,47 @@
  */
 void counting_sort(int *array, size_t size)
 {
-    int *counting, *output;
-    size_t i;
-    int max = 0;
+	int *count, *output;
+	size_t i, max = 0;
 
-    if (array == NULL || size < 2)
-        return;
+	if (array == NULL || size < 2)
+		return;
 
-    /* Find maximum element */
-    for (i = 0; i < size; i++)
-        if (array[i] > max)
-            max = array[i];
+	for (i = 0; i < size; i++)
+		if ((size_t)array[i] > max)
+			max = array[i];
 
-    /* Create counting array */
-    counting = malloc(sizeof(int) * (max + 1));
-    if (counting == NULL)
-        return;
-    output = malloc(sizeof(int) * size);
-    if (output == NULL)
-    {
-        free(counting);
-        return;
-    }
+	count = malloc(sizeof(int) * (max + 1));
+	if (count == NULL)
+		return;
 
-    /* Initialize counting array */
-    for (i = 0; i <= (size_t)max; i++)
-        counting[i] = 0;
+	output = malloc(sizeof(int) * size);
+	if (output == NULL)
+	{
+		free(count);
+		return;
+	}
 
-    /* Store count of each element */
-    for (i = 0; i < size; i++)
-        counting[array[i]]++;
+	for (i = 0; i <= max; i++)
+		count[i] = 0;
 
-    /* Calculate cumulative count */
-    for (i = 1; i <= (size_t)max; i++)
-        counting[i] += counting[i - 1];
+	for (i = 0; i < size; i++)
+		count[array[i]]++;
 
-    print_array(counting, max + 1);
+	for (i = 1; i <= max; i++)
+		count[i] += count[i - 1];
 
-    /* Build output array */
-    for (i = size - 1; i < size; i--)
-    {
-        output[counting[array[i]] - 1] = array[i];
-        counting[array[i]]--;
-    }
+	print_array(count, max + 1);
 
-    /* Copy output array to original array */
-    for (i = 0; i < size; i++)
-        array[i] = output[i];
+	for (i = size - 1; i < size; i--)
+	{
+		output[count[array[i]] - 1] = array[i];
+		count[array[i]]--;
+	}
 
-    free(counting);
-    free(output);
+	for (i = 0; i < size; i++)
+		array[i] = output[i];
+
+	free(count);
+	free(output);
 }

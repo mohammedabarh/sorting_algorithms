@@ -1,53 +1,71 @@
 #include "sort.h"
 
 /**
+ * get_max - Gets the maximum value in an array
+ * @array: Array to find max value from
+ * @size: Size of the array
+ * Return: Maximum value
+ */
+int get_max(int *array, size_t size)
+{
+	int max = array[0];
+	size_t i;
+
+	for (i = 1; i < size; i++)
+		if (array[i] > max)
+			max = array[i];
+	return (max);
+}
+
+/**
  * counting_sort - Sorts an array using counting sort algorithm
- * @array: Array to sort
+ * @array: Array to be sorted
  * @size: Size of the array
  */
 void counting_sort(int *array, size_t size)
 {
-	int *count, *output;
-	size_t i, max = 0;
+	int *counting_array, *output, max, i;
 
-	if (array == NULL || size < 2)
+	if (!array || size < 2)
 		return;
 
-	for (i = 0; i < size; i++)
-		if ((size_t)array[i] > max)
-			max = array[i];
-
-	count = malloc(sizeof(int) * (max + 1));
-	if (count == NULL)
+	max = get_max(array, size);
+	counting_array = malloc(sizeof(int) * (max + 1));
+	if (!counting_array)
 		return;
 
 	output = malloc(sizeof(int) * size);
-	if (output == NULL)
+	if (!output)
 	{
-		free(count);
+		free(counting_array);
 		return;
 	}
 
+	/* Initialize counting array */
 	for (i = 0; i <= max; i++)
-		count[i] = 0;
+		counting_array[i] = 0;
 
-	for (i = 0; i < size; i++)
-		count[array[i]]++;
+	/* Count occurrences */
+	for (i = 0; i < (int)size; i++)
+		counting_array[array[i]]++;
 
+	/* Calculate cumulative count */
 	for (i = 1; i <= max; i++)
-		count[i] += count[i - 1];
+		counting_array[i] += counting_array[i - 1];
 
-	print_array(count, max + 1);
+	print_array(counting_array, max + 1);
 
-	for (i = size - 1; i < size; i--)
+	/* Build output array */
+	for (i = size - 1; i >= 0; i--)
 	{
-		output[count[array[i]] - 1] = array[i];
-		count[array[i]]--;
+		output[counting_array[array[i]] - 1] = array[i];
+		counting_array[array[i]]--;
 	}
 
-	for (i = 0; i < size; i++)
+	/* Copy output array to original array */
+	for (i = 0; i < (int)size; i++)
 		array[i] = output[i];
 
-	free(count);
+	free(counting_array);
 	free(output);
 }

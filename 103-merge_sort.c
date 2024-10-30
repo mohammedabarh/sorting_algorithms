@@ -4,17 +4,19 @@
  * merge - Merges two subarrays
  * @array: Original array
  * @left: Left subarray
+ * @left_size: Size of left subarray
  * @right: Right subarray
- * @size: Size of original array
+ * @right_size: Size of right subarray
  */
-void merge(int *array, int *left, int *right, size_t size)
+void merge(int *array, int *left, size_t left_size, int *right, size_t right_size)
 {
 	size_t i = 0, j = 0, k = 0;
-	size_t left_size = size / 2;
-	size_t right_size = size - left_size;
+	int *temp = malloc(sizeof(int) * (left_size + right_size));
 
-	printf("Merging...\n");
-	printf("[left]: ");
+	if (!temp)
+		return;
+
+	printf("Merging...\n[left]: ");
 	print_array(left, left_size);
 	printf("[right]: ");
 	print_array(right, right_size);
@@ -22,36 +24,39 @@ void merge(int *array, int *left, int *right, size_t size)
 	while (i < left_size && j < right_size)
 	{
 		if (left[i] <= right[j])
-			array[k++] = left[i++];
+			temp[k++] = left[i++];
 		else
-			array[k++] = right[j++];
+			temp[k++] = right[j++];
 	}
 
 	while (i < left_size)
-		array[k++] = left[i++];
+		temp[k++] = left[i++];
 
 	while (j < right_size)
-		array[k++] = right[j++];
+		temp[k++] = right[j++];
+
+	for (i = 0; i < left_size + right_size; i++)
+		array[i] = temp[i];
 
 	printf("[Done]: ");
-	print_array(array, size);
+	print_array(array, left_size + right_size);
+	free(temp);
 }
 
 /**
  * merge_sort - Sorts an array using merge sort algorithm
- * @array: Array to sort
+ * @array: Array to be sorted
  * @size: Size of the array
  */
 void merge_sort(int *array, size_t size)
 {
-	size_t mid;
+	size_t mid, i;
 	int *left, *right;
 
-	if (size < 2 || array == NULL)
+	if (!array || size < 2)
 		return;
 
 	mid = size / 2;
-
 	left = malloc(sizeof(int) * mid);
 	right = malloc(sizeof(int) * (size - mid));
 
@@ -62,14 +67,14 @@ void merge_sort(int *array, size_t size)
 		return;
 	}
 
-	for (size_t i = 0; i < mid; i++)
+	for (i = 0; i < mid; i++)
 		left[i] = array[i];
-	for (size_t i = mid; i < size; i++)
+	for (i = mid; i < size; i++)
 		right[i - mid] = array[i];
 
 	merge_sort(left, mid);
 	merge_sort(right, size - mid);
-	merge(array, left, right, size);
+	merge(array, left, mid, right, size - mid);
 
 	free(left);
 	free(right);

@@ -1,44 +1,60 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "sort.h"
 
 /**
- * counting_sort - Sorts an array of integers in ascending order using
- *                 the Counting sort algorithm.
- *
- * @array: The array to be sorted
- * @size: The size of the array
+ * counting_sort - Sorts an array using counting sort algorithm
+ * @array: Array to sort
+ * @size: Size of the array
  */
 void counting_sort(int *array, size_t size)
 {
-    int *count, *output;
-    int max = array[0];
+    int *counting_array, *output;
     size_t i;
+    int max = 0;
 
-    if (array == NULL || size < 2)
+    if (!array || size < 2)
         return;
 
-    for (i = 1; i < size; i++)
-    {
+    /* Find maximum element */
+    for (i = 0; i < size; i++)
         if (array[i] > max)
             max = array[i];
+
+    counting_array = malloc(sizeof(int) * (max + 1));
+    if (!counting_array)
+        return;
+
+    output = malloc(sizeof(int) * size);
+    if (!output)
+    {
+        free(counting_array);
+        return;
     }
 
-    count = calloc(max + 1, sizeof(int));
-    output = malloc(size * sizeof(int));
+    /* Initialize counting array */
+    for (i = 0; i <= (size_t)max; i++)
+        counting_array[i] = 0;
 
+    /* Store count of each element */
     for (i = 0; i < size; i++)
-        count[array[i]]++;
+        counting_array[array[i]]++;
 
-    for (i = 1; i <= max; i++)
-        count[i] += count[i - 1];
+    /* Update counting array to store actual positions */
+    for (i = 1; i <= (size_t)max; i++)
+        counting_array[i] += counting_array[i - 1];
 
-    for (i = size; i > 0; i--)
-        output[count[array[i - 1]] - 1] = array[i - 1];
+    print_array(counting_array, max + 1);
 
+    /* Build output array */
+    for (i = size - 1; i < size; i--)
+    {
+        output[counting_array[array[i]] - 1] = array[i];
+        counting_array[array[i]]--;
+    }
+
+    /* Copy output array to original array */
     for (i = 0; i < size; i++)
         array[i] = output[i];
 
-    free(count);
+    free(counting_array);
     free(output);
 }

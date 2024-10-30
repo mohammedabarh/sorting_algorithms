@@ -1,42 +1,64 @@
-#include <stdio.h>
 #include "sort.h"
 
 /**
- * cocktail_sort_list - Sorts a doubly linked list of integers in
- *                       ascending order using the Cocktail shaker sort algorithm.
- *
- * @list: Pointer to the head of the list
+ * swap_nodes - Swaps two nodes in a doubly linked list
+ * @list: Double pointer to the head of the list
+ * @node1: First node to swap
+ * @node2: Second node to swap
+ */
+void swap_nodes(listint_t **list, listint_t *node1, listint_t *node2)
+{
+    if (node1->prev)
+        node1->prev->next = node2;
+    else
+        *list = node2;
+
+    if (node2->next)
+        node2->next->prev = node1;
+
+    node1->next = node2->next;
+    node2->prev = node1->prev;
+    node1->prev = node2;
+    node2->next = node1;
+}
+
+/**
+ * cocktail_sort_list - Sorts a doubly linked list using cocktail sort
+ * @list: Double pointer to the head of the list
  */
 void cocktail_sort_list(listint_t **list)
 {
     int swapped = 1;
-    listint_t *start, *end;
+    listint_t *current;
 
-    if (list == NULL || *list == NULL)
+    if (!list || !*list || !(*list)->next)
         return;
-
-    start = *list;
-    end = NULL;
 
     while (swapped)
     {
         swapped = 0;
-        for (; start->next != end; start = start->next)
+        for (current = *list; current->next; current = current->next)
         {
-            if (start->n > start->next->n)
+            if (current->n > current->next->n)
             {
-                swap(start);
+                swap_nodes(list, current, current->next);
+                print_list(*list);
                 swapped = 1;
+                current = current->prev;
             }
         }
-        end = start;
+        if (!swapped)
+            break;
 
-        for (; start->prev != NULL; start = start->prev)
+        swapped = 0;
+        for (; current->prev; current = current->prev)
         {
-            if (start->n < start->prev->n)
+            if (current->n < current->prev->n)
             {
-                swap(start->prev);
+                swap_nodes(list, current->prev, current);
+                print_list(*list);
                 swapped = 1;
+                current = current->next;
             }
         }
     }

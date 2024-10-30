@@ -1,84 +1,65 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "deck.h"
 
 /**
- * card_value - Returns the value of a card for sorting.
- *
- * @card: Pointer to the card
- * 
- * Return: Integer value representing the card's value
+ * get_card_value - Gets numerical value of a card
+ * @card: Card to evaluate
+ * Return: Numerical value of the card
  */
-int card_value(const card_t *card)
+int get_card_value(const card_t *card)
 {
-    if (card->value[0] == 'A')
-        return 1;
-    if (card->value[0] == 'K')
-        return 13;
-    if (card->value[0] == 'Q')
-        return 12;
-    if (card->value[0] == 'J')
-        return 11;
+    int i;
+    char *values[] = {"Ace", "2", "3", "4", "5", "6", "7",
+                      "8", "9", "10", "Jack", "Queen", "King"};
 
-    return atoi(card->value); // Convert string to int for numerical values
+    for (i = 0; i < 13; i++)
+        if (strcmp(card->value, values[i]) == 0)
+            return i;
+    return 0;
 }
 
 /**
- * compare_cards - Compares two cards for sorting.
- *
+ * compare_cards - Compares two cards
  * @a: First card
  * @b: Second card
- * 
- * Return: Negative if a < b, positive if a > b, zero if equal
+ * Return: Comparison result
  */
 int compare_cards(const void *a, const void *b)
 {
-    const deck_node_t *card_a = *(const deck_node_t **)a;
-    const deck_node_t *card_b = *(const deck_node_t **)b;
+    deck_node_t *node_a = *(deck_node_t **)a;
+    deck_node_t *node_b = *(deck_node_t **)b;
 
-    int value_a = card_value(card_a->card);
-    int value_b = card_value(card_b->card);
-
-    if (value_a != value_b)
-        return value_a - value_b;
-
-    return card_a->card->kind - card_b->card->kind;
+    if (node_a->card->kind != node_b->card->kind)
+        return node_a->card->kind - node_b->card->kind;
+    return get_card_value(node_a->card) - get_card_value(node_b->card);
 }
 
 /**
- * sort_deck - Sorts a deck of cards.
- *
- * @deck: Double pointer to the head of the deck
+ * sort_deck - Sorts a deck of cards
+ * @deck: Pointer to the head of the deck
  */
 void sort_deck(deck_node_t **deck)
 {
-    deck_node_t **array;
+    deck_node_t *array[52];
     deck_node_t *current;
-    size_t size, i;
+    int i;
 
-    // Count the number of nodes in the deck
-    for (current = *deck, size = 0; current; current = current->next)
-        size++;
-
-    // Allocate memory for the array of pointers to nodes
-    array = malloc(size * sizeof(deck_node_t *));
-    if (!array)
+    if (!deck || !*deck)
         return;
 
-    // Fill the array with the nodes
-    for (current = *deck, i = 0; current; current = current->next, i++)
-        array[i] = current;
-
-    // Sort the array using qsort
-    qsort(array, size, sizeof(deck_node_t *), compare_cards);
-
-    // Re-link the sorted nodes
-    for (i = 0; i < size; i++)
+    current = *deck;
+    for (i = 0; i < 52; i++)
     {
-        array[i]->prev = (i > 0) ? array[i - 1] : NULL;
-        array[i]->next = (i < size - 1) ? array[i + 1] : NULL;
+        array[i] = current;
+        current = current->next;
     }
-    *deck = array[0]; // Update the head of the deck
 
-    free(array); // Free the temporary array
+    qsort(array, 52, sizeof(deck_node_t *), compare_cards);
+
+    for (i = 0; i < 52; i++)
+    {
+        array[i]->prev = i > 0 ? array[i - 1] : NULL;
+        array[i]->next = i < 51 ? array[i + 1] : NULL;
+    }
+
+    *deck = array[0];
 }

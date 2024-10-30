@@ -1,6 +1,15 @@
 #ifndef DECK_H
 #define DECK_H
 
+#include <stdlib.h>
+
+/**
+ * enum kind_e - Card suit
+ * @SPADE: Spade suit
+ * @HEART: Heart suit
+ * @CLUB: Club suit
+ * @DIAMOND: Diamond suit
+ */
 typedef enum kind_e
 {
     SPADE = 0,
@@ -23,7 +32,7 @@ typedef struct card_s
 } card_t;
 
 /**
- * struct deck_node_s - Deck of cards
+ * struct deck_node_s - Deck of card
  *
  * @card: Pointer to the card of the node
  * @prev: Pointer to the previous node of the list

@@ -1,32 +1,34 @@
 #include "sort.h"
-#include <stdio.h>
 #include <stdlib.h>
 
 /**
- * get_max - Gets the maximum value in an array
- * @array: Array to search
- * @size: Size of the array
- * Return: Maximum value
+ * get_max - Gets maximum value in array
+ * @array: Array to find max value from
+ * @size: Size of array
+ * Return: Maximum integer in array
  */
 int get_max(int *array, size_t size)
 {
 	size_t i;
-	int max = array[0];
+	int max;
 
+	max = array[0];
 	for (i = 1; i < size; i++)
+	{
 		if (array[i] > max)
 			max = array[i];
+	}
 	return (max);
 }
 
 /**
- * counting_sort - Sorts an array using counting sort algorithm
- * @array: Array to be sorted
- * @size: Size of the array
+ * counting_sort - Sorts array of integers using Counting sort algorithm
+ * @array: Array to sort
+ * @size: Size of array
  */
 void counting_sort(int *array, size_t size)
 {
-	int *counting_array, *output;
+	int *count, *output;
 	int max, i;
 	size_t j;
 
@@ -34,43 +36,43 @@ void counting_sort(int *array, size_t size)
 		return;
 
 	max = get_max(array, size);
-	counting_array = malloc(sizeof(int) * (max + 1));
-	if (!counting_array)
+	count = malloc(sizeof(int) * (max + 1));
+	if (!count)
 		return;
 
 	output = malloc(sizeof(int) * size);
 	if (!output)
 	{
-		free(counting_array);
+		free(count);
 		return;
 	}
 
-	/* Initialize counting array */
+	/* Initialize count array with zeros */
 	for (i = 0; i <= max; i++)
-		counting_array[i] = 0;
+		count[i] = 0;
 
-	/* Count occurrences */
+	/* Store count of each element */
 	for (j = 0; j < size; j++)
-		counting_array[array[j]]++;
+		count[array[j]]++;
 
-	/* Calculate cumulative count */
+	/* Update count[i] to store actual position */
 	for (i = 1; i <= max; i++)
-		counting_array[i] += counting_array[i - 1];
+		count[i] += count[i - 1];
 
 	/* Print counting array */
-	print_array(counting_array, max + 1);
+	print_array(count, max + 1);
 
 	/* Build output array */
 	for (i = size - 1; i >= 0; i--)
 	{
-		output[counting_array[array[i]] - 1] = array[i];
-		counting_array[array[i]]--;
+		output[count[array[i]] - 1] = array[i];
+		count[array[i]]--;
 	}
 
 	/* Copy output array to original array */
 	for (j = 0; j < size; j++)
 		array[j] = output[j];
 
-	free(counting_array);
+	free(count);
 	free(output);
 }
